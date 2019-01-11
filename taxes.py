@@ -1,3 +1,6 @@
+import csv
+import os
+
 def build_tax_dictionary(filename):
     """
     Take in the filename of the taxrates,
@@ -10,12 +13,25 @@ def build_tax_dictionary(filename):
     (c) For instance, calculating the total tax paid for a bracket
     (range * percent rate) would be a useful value to have in the dictionary
     """
-    # TODO: read from the csv and populate a dictionary
+    dict = {}
 
-    # TODO: return the dictionary
+    with open(filename, 'r') as f:
+        csv_file = csv.reader(f)
+        next(csv_file)
 
-    # TODO: remove this "return None" statement when complete
-    return None
+        for row in csv_file:
+            key = int(row[1])
+
+            rate = float(row[0])
+            low = int(row[1])
+            high = int(row[2])
+            delta = int(row[3])
+
+            value = (rate, low, high, delta)
+
+            dict[key]=value
+
+        return(dict)
 
 def calculate_tax(agi, tax_dict):
     """
@@ -39,15 +55,33 @@ def calculate_tax(agi, tax_dict):
 
     s/he does NOT pay 22% of $50,000!!
     """
-    # TODO: find all the tax brackets that the individual agi "hits"
+    keys = len(tax_dict.keys())
+    keys_for_dict = list(tax_dict.keys())
 
-    # TODO: determine how much of each tax bracket the individual agi "hits"
+    pay = 0
 
-    # TODO: calculate amount of tax owed per tax bracket
 
-    # TODO: sum the tax owed
+    for i in range(keys):
+        rate = tax_dict[keys_for_dict[i]][0]
+        low = tax_dict[keys_for_dict[i]][1]
+        high = tax_dict[keys_for_dict[i]][2]
+        delta = tax_dict[keys_for_dict[i]][3]
 
-    # TODO: return total tax owed
+        if agi > high:
+            pay = rate*delta + pay
+            pass
+        else:
+            pay = rate*(agi - low) + pay
+            return(int(pay))
 
-    # TODO: remove the following "return -1" when code is complete
-    return -1
+
+
+# MY_DIR = os.path.dirname(os.path.realpath(__file__))
+# TAX_RATE_FILENAME = 'income_tax_rates_2018.csv'
+#
+# TAX_RATE_DICT = build_tax_dictionary(MY_DIR + '/' + TAX_RATE_FILENAME)
+# print(TAX_RATE_DICT)
+
+
+
+# print(calculate_tax(550_000-12000, TAX_RATE_DICT))
